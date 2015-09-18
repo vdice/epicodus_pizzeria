@@ -17,6 +17,14 @@ Topping.prototype.getPrice = function() {
 function Pizza(size, cost) {
   this.size = size;
   this.cost = cost;
+  this.toppings = [];
+}
+
+Pizza.prototype.addToppings = function(toppingsArray) {
+  var self = this;
+  toppingsArray.forEach(function(topping) {
+    self.toppings.push(topping);
+  });
 }
 
 function Pizzeria() {

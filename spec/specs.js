@@ -21,6 +21,15 @@ describe('Pizza', function() {
   it('returns its base price with no toppings', function() {
     expect(testPizza.cost).to.equal(700);
   });
+
+  it('can recieve additional toppings', function() {
+    var testToppings = [new Topping('calamari', 100),
+                        new Topping('natto', 200)];
+
+    expect(testPizza.toppings).to.eql([]);
+    testPizza.addToppings(testToppings);
+    expect(testPizza.toppings).to.eql(testToppings);
+  });
 });
 
 describe('Pizzeria', function() {
