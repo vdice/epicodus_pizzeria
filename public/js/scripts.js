@@ -1,6 +1,10 @@
 var CURRENCIES = {'JPY': {name: 'yen', symbol: '¥', costSuffix: '00'},
                   'USD': {name: 'usd', symbol: '$', costSuffix: ' '}};
 
+// ********************************************
+// Topping
+// ********************************************
+
 function Topping(name, price) {
   this.name = name;
   this.price = price;
@@ -10,9 +14,9 @@ Topping.prototype.setPrice = function(price) {
   this.price = price;
 }
 
-Topping.prototype.getPrice = function() {
-  return this.price;
-}
+// ********************************************
+// Pizza
+// ********************************************
 
 function Pizza(size, cost) {
   this.size = size;
@@ -27,6 +31,10 @@ Pizza.prototype.addToppings = function(toppingsArray) {
     self.cost += topping.price;
   });
 }
+
+// ********************************************
+// Pizzeria
+// ********************************************
 
 function Pizzeria() {
   this.currency = CURRENCIES['JPY'];

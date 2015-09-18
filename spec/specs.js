@@ -10,12 +10,12 @@ describe('Topping', function() {
   });
 
   it('returns its price', function() {
-    expect(testTopping.getPrice()).to.equal(100);
+    expect(testTopping.price).to.equal(100);
   });
 
   it('returns its altered price', function() {
     testTopping.setPrice(200);
-    expect(testTopping.getPrice()).to.equal(200);
+    expect(testTopping.price).to.equal(200);
   });
 });
 
