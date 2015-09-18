@@ -1,5 +1,9 @@
 describe('Topping', function() {
-  var testTopping = new Topping('calamari', 100);
+  var testTopping;
+
+  beforeEach(function() {
+    testTopping = new Topping('calamari', 100);
+  });
 
   it('returns its name', function() {
     expect(testTopping.name).to.equal('calamari');
@@ -16,24 +20,36 @@ describe('Topping', function() {
 });
 
 describe('Pizza', function() {
-  var testPizza = new Pizza('7', 700);
+  var testPizza, testToppings;
+
+  beforeEach(function() {
+    testPizza = new Pizza('7', 700);
+    testToppings = [new Topping('calamari', 100),
+                    new Topping('natto', 200)];
+  });
 
   it('returns its base price with no toppings', function() {
     expect(testPizza.cost).to.equal(700);
   });
 
   it('can recieve additional toppings', function() {
-    var testToppings = [new Topping('calamari', 100),
-                        new Topping('natto', 200)];
-
     expect(testPizza.toppings).to.eql([]);
     testPizza.addToppings(testToppings);
     expect(testPizza.toppings).to.eql(testToppings);
   });
+
+  it('returns its price including toppings', function() {
+    testPizza.addToppings(testToppings);
+    expect(testPizza.cost).to.equal(1000);
+  });
 });
 
 describe('Pizzeria', function() {
-  var testPizzeria = new Pizzeria();
+  var testPizzeria;
+
+  beforeEach(function() {
+    testPizzeria = new Pizzeria();
+  });
 
   it('returns base pizzas', function() {
     expect(testPizzeria.getPizzas()['7']).to.eql(new Pizza('7', 700));

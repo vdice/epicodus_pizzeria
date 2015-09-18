@@ -24,6 +24,7 @@ Pizza.prototype.addToppings = function(toppingsArray) {
   var self = this;
   toppingsArray.forEach(function(topping) {
     self.toppings.push(topping);
+    self.cost += topping.price;
   });
 }
 
