@@ -133,7 +133,7 @@ $(function() {
   // build sizes
   pizzeria.pizzas.forEach(function(pizza) {
     $('#pizza-sizes').append('<div class="col-xs-1">' +
-                               '<span class="img-circle pizza-size">' +
+                               '<span class="img-circle hoverable pizza-size">' +
                                  pizza.size + '"' +
                                '</span>' +
                              '</div>');
@@ -142,7 +142,7 @@ $(function() {
   // build toppings
   pizzeria.toppings.forEach(function(topping) {
     $('#pizza-toppings').append('<div class="col-xs-1">' +
-                                  '<span class="img-circle topping">' +
+                                  '<span class="img-circle hoverable topping">' +
                                     '<img class="topping-image" src="img/' +
                                       topping.name + '.png">' +
                                   '</span>' +

@@ -2,6 +2,10 @@
   display: none;
 }
 
+.hoverable:hover {
+  cursor:pointer;
+}
+
 .selected, .selected-topping {
   background-color: #C8E980;
 }
