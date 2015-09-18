@@ -77,3 +77,18 @@ Pizzeria.prototype.changeCurrency = function(currency) {
 Pizzeria.prototype.cost = function(size) {
   return this.costs[size];
 }
+
+$(function() {
+  $("#submit-button").html('<i class="fa fa-hand-o-right"></i>');
+
+  $('#pizza-form').submit(function(event) {
+    event.preventDefault();
+
+    $("#submit-button").html('<i class="fa fa-thumbs-o-up"></i>');
+
+    $(".focusable").focus(function() {
+      $("#submit-button").html('<i class="fa fa-hand-o-right"></i>');
+    });
+
+  });
+});
