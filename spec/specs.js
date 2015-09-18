@@ -1,6 +1,12 @@
 describe('Topping', function() {
+  var testTopping = new Topping('calamari');
+
   it('returns its name', function() {
-    var testTopping = new Topping('calamari');
     expect(testTopping.name).to.equal('calamari');
+  });
+
+  it('returns its price', function() {
+    testTopping.setPrice(100);
+    expect(testTopping.getPrice()).to.equal(100);
   });
 });
