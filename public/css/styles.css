@@ -2,6 +2,11 @@
   display: none;
 }
 
-.topping {
-  background-color: green;
+.selected, .selected-topping {
+  background-color: #C8E980;
+}
+
+.topping-image {
+  height: 2em;
+  width: 2em;
 }

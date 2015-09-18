@@ -1,5 +1,31 @@
+// ********************************************
+// Global 'Constants'
+// ********************************************
+
 var CURRENCIES = {'JPY': {name: 'yen', symbol: '¥', costSuffix: '00'},
                   'USD': {name: 'usd', symbol: '$', costSuffix: ' '}};
+
+var TOPPINGS_JS_TRANSLATIONS = {"mushroom": 'キノコ',
+                                "onion": 'タマネギ',
+                                "pepperoni": 'ペパロニ',
+                                "tomato": 'トマト',
+                                "sausage": 'ソーセージ',
+                                "cheese": 'チーズ',
+                                "broccoli": 'ブロッコリー',
+                                "chili-pepper": '唐辛子',
+                                "bell-pepper": 'ピーマン',
+                                "banana": 'バナナ'};
+
+var TOPPINGS = [new Topping("mushroom", 100),
+                new Topping("onion",    100),
+                new Topping("pepperoni", 125),
+                new Topping("tomato", 100),
+                new Topping("sausage", 125),
+                new Topping("cheese", 100),
+                new Topping("broccoli", 150),
+                new Topping("chili-pepper", 150),
+                new Topping("bell-pepper", 100),
+                new Topping("banana", 200)];
 
 // ********************************************
 // Topping
@@ -38,16 +64,7 @@ function Pizzeria() {
   this.sizes = ['7', '11', '15', '19', '23'];
   this.costs = this.calculateCosts(this.currency);
   this.pizzas = this.getPizzas();
-  this.toppings = [new Topping("mushroom", 100),
-                   new Topping("onion",    100),
-                   new Topping("pepperoni", 125),
-                   new Topping("tomato", 100),
-                   new Topping("sausage", 125),
-                   new Topping("cheese", 100),
-                   new Topping("broccoli", 150),
-                   new Topping("chili-pepper", 150),
-                   new Topping("bell-pepper", 100),
-                   new Topping("banana", 200)];
+  this.toppings = TOPPINGS;
 }
 
 Pizzeria.prototype.calculateCosts = function(currency) {
@@ -111,96 +128,129 @@ Pizzeria.prototype.find = function(query) {
 
 $(function() {
   var pizzeria = new Pizzeria();
-  toggle($('#submit-button'));
+  $('#submit-button').html('<i class="fa fa-hand-o-right"></i>');
 
   // build sizes
   pizzeria.pizzas.forEach(function(pizza) {
-    $('#pizza-sizes').append('<div class="col-xs-1 mouseoverable">' +
-                               '<span class="pizza-size selectable btn btn-success">' +
-                                 pizza.size +
+    $('#pizza-sizes').append('<div class="col-xs-1">' +
+                               '<span class="img-circle pizza-size">' +
+                                 pizza.size + '"' +
                                '</span>' +
                              '</div>');
   });
 
   // build toppings
   pizzeria.toppings.forEach(function(topping) {
-    $('#pizza-toppings').append('<div class="col-xs-1 mouseoverable">' +
-                                  '<span class="img-circle selectable topping">' +
-                                    '<img src="img/' +
-                                      topping.name + '.png" height="36px" width="36px">' +
+    $('#pizza-toppings').append('<div class="col-xs-1">' +
+                                  '<span class="img-circle topping">' +
+                                    '<img class="topping-image" src="img/' +
+                                      topping.name + '.png">' +
                                   '</span>' +
                                 '</div>');
   });
 
   $('#pizza-form').submit(function(event) {
     event.preventDefault();
-    toggle($('#submit-button'));
 
-    var size = $('#pizza-size').val();
+    var size = $('#pizza-size').val().split('"')[0];
     var pizza = pizzeria.find(size);
     var toppings = $('.selected-topping');
-    toppings.each(function() {
-      var topping = pizzeria.find(getToppingName($(this)));
-      pizza.addTopping(topping);
-    });
-
     var count = Number($('#pizza-count').val());
 
     var resultHtml = '<h2>サイズをご指定ください!</h2>'; // Please specify a size!
     if (pizza) {
-      var totalCost = pizzeria.currency.symbol + pizza.cost;
+      thumbsUp($('#submit-button'));
+
+      // add toppings
+      toppings.each(function() {
+        var topping = pizzeria.find(getToppingName($(this)));
+        pizza.addTopping(topping);
+      });
+
+      // calculate cost
+      var totalCost = pizzeria.currency.symbol + count*pizza.cost;
+
+      // format result
       resultHtml = ['<h2>ご注文: <br>',
                     '<small>',
                     '(', count, ') ',
-                    pizza.size + '" '];
+                    pizza.size + '" ',
+                    '<img class="topping-image" src="img/pizza.png">'];
 
       if (pizza.toppings.length > 0) {
-        resultHtml.push('含めて: ', '<br>'); // including
+        resultHtml.push('<br>', '含めて: ', '<br>'); // including
         pizza.toppings.forEach(function(topping) {
-          resultHtml.push(topping.name, '<br>');
+          resultHtml.push(TOPPINGS_JS_TRANSLATIONS[topping.name], ' ',
+                          '<img class="topping-image" src="img/' +
+                          topping.name + '.png">', '<br>');
         });
       }
       resultHtml.push('</small>', '</h2>');
       resultHtml.push('<h2>総費用: <br>', totalCost, '</h2>');
 
       resultHtml.join('');
+    } else {
+      thumbsDown($('#submit-button'));
     }
 
     $('#result').html(resultHtml);
     $('#result').fadeIn();
-  });
-
-  $('.mouseoverable').mouseover(function() {
-    $('#submit-button').html('<i class="fa fa-hand-o-right"></i>');
-  });
-
-  $('.selectable').click(function() {
-    $(this).toggleClass('btn-success');
+    resetFields();
   });
 
   $('.pizza-size').click(function() {
+    pointRight($('#submit-button'));
+    $('.selected').toggleClass('selected');
     $('#pizza-size').val($(this).text());
+    $(this).toggleClass('selected');
   });
 
   $('.topping').click(function() {
+    pointRight($('#submit-button'));
     $(this).toggleClass('selected-topping');
   });
 
-  $('.focusable').focus(function() {
-    toggle($('#submit-button'));
+  $('#pizza-count').focus(function() {
+    pointRight($('#submit-button'));
   });
+
+  function resetFields() {
+    pizzeria = new Pizzeria();
+  }
 });
 
-// DOM Helper Functions
+// ********************************************
+// DOM Helpers
+// ********************************************
 
 var getToppingName = function(element) {
   return element.find('img').attr('src').split('.')[0].split('/')[1];
 }
 
-var toggle = function(button) {
-  if (button.find('i').attr('class') === 'fa fa-hand-o-right') {
-    button.html('<i class="fa fa-thumbs-o-up"></i>');
-  } else {
-    button.html('<i class="fa fa-hand-o-right"></i>');
-  }
+var makeSuccess = function(element) {
+  element.removeClass();
+  element.addClass('btn btn-success');
+}
+
+var makeDanger = function(element) {
+  element.removeClass();
+  element.addClass('btn btn-danger');
+}
+
+var pointRight = function(element) {
+  makeSuccess(element);
+  element.find('i').removeClass();
+  element.find('i').addClass('fa fa-hand-o-right');
+}
+
+var thumbsUp = function(element) {
+  makeSuccess(element);
+  element.find('i').removeClass();
+  element.find('i').addClass('fa fa-thumbs-o-up');
+}
+
+var thumbsDown = function(element) {
+  makeDanger(element);
+  element.find('i').removeClass();
+  element.find('i').addClass('fa fa-thumbs-o-down');
 }
