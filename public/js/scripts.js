@@ -132,10 +132,6 @@ $(function() {
                                 '</div>');
   });
 
-  var getToppingName = function(element) {
-    return element.find('img').attr('src').split('.')[0].split('/')[1];
-  }
-
   $('#pizza-form').submit(function(event) {
     event.preventDefault();
     toggle($('#submit-button'));
@@ -148,7 +144,29 @@ $(function() {
       pizza.addTopping(topping);
     });
 
-    $('#result').text(pizza.cost);
+    var count = Number($('#pizza-count').val());
+
+    var resultHtml = '<h2>サイズをご指定ください!</h2>'; // Please specify a size!
+    if (pizza) {
+      var totalCost = pizzeria.currency.symbol + pizza.cost;
+      resultHtml = ['<h2>ご注文: <br>',
+                    '<small>',
+                    '(', count, ') ',
+                    pizza.size + '" '];
+
+      if (pizza.toppings.length > 0) {
+        resultHtml.push('含めて: ', '<br>'); // including
+        pizza.toppings.forEach(function(topping) {
+          resultHtml.push(topping.name, '<br>');
+        });
+      }
+      resultHtml.push('</small>', '</h2>');
+      resultHtml.push('<h2>総費用: <br>', totalCost, '</h2>');
+
+      resultHtml.join('');
+    }
+
+    $('#result').html(resultHtml);
     $('#result').fadeIn();
   });
 
@@ -172,6 +190,12 @@ $(function() {
     toggle($('#submit-button'));
   });
 });
+
+// DOM Helper Functions
+
+var getToppingName = function(element) {
+  return element.find('img').attr('src').split('.')[0].split('/')[1];
+}
 
 var toggle = function(button) {
   if (button.find('i').attr('class') === 'fa fa-hand-o-right') {
