@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="js/jquery-1.11.3.min.js"></script>
     <script src="js/scripts.js"></script>
-    <title>Japanese Pizzeria</title>
+    <title class="translate" value="title" id="title"></span></title>
   </head>
   <body>
     <div class="container">
@@ -15,10 +15,14 @@
         <center>
           <h2>
             <img src="img/pizza-slice.png" height="64px" width="64px">
-            ミルクの赤ちゃんのピザ <!-- Milk Baby Pizza -->
+            <span class="translate" value="name" id="pizzeria-name"></span>
             <img src="img/pizza-slice.png" height="64px" width="64px"><br>
-            <small>ようこそ!<br>以下にご注文ください</small> <!-- Welcome! Please order below -->
+            <small>
+              <span class="translate" value="greeting" id="greeting"></span>!
+              <span class="translate" value="instruction" id="instruction"></span>.
+            </small>
           </h2>
+          <button id="language" value="JP" class="btn btn-primary">EN</button>
         </center>
       </div>
       <div class="row">
@@ -26,26 +30,45 @@
           <form id="pizza-form">
             <!-- Size -->
             <div class="form-group">
-              <label for="pizza-sizes">サイズ:</label>
+              <label for="pizza-sizes">
+                <span class="translate" id="pizza-sizes-label" value="size"></span>:
+              </label>
               <input type="hidden" name="pizza-size" id="pizza-size">
               <div class="row" id="pizza-sizes" name="pizza-sizes"></div>
             </div>
             <!-- Toppings -->
             <div class="form-group">
-              <label for="pizza-toppings">トッピング:</label>
+              <label for="pizza-toppings">
+                <span class="translate" id="pizza-toppings-label" value="toppings"></span>:
+              </label>
               <div class="row" id="pizza-toppings" name="pizza-toppings"></div>
             </div>
             <!-- Count -->
             <div class="form-group">
-              <label for="pizza-count">カウント:</label>
+              <label for="pizza-count">
+                <span class="translate" id="pizza-count-label" value="count"></span>:
+              </label>
               <input class="form-control" type="number" id="pizza-count" name="pizza-count" value="1" min="1">
             </div>
             <button type="submit" class="btn btn-success" id="submit-button"></button>
           </form>
         </div>
         <div class="col-xs-4">
+          <div id="error">
+            <h2><span class="translate" value="error"></span>!</h2>
+          </div>
+
           <div id="result">
-            <!-- Result goes here -->
+            <h2 id="order-header">
+              <span class="translate" value="order-header"></span>: <br>
+            </h2>
+            <div id="toppings-listing">
+              <h2><span class="translate" value="including"></span>: </h2>
+            </div>
+            <div id="total-cost">
+              <h2>
+                <span class="translate" value="total"></span>: <br>
+              </h2>
             </div>
           </div>
         </div>

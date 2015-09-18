@@ -1,20 +1,32 @@
 // ********************************************
 // Global 'Constants'
 // ********************************************
+var language = 'JP';
 
-var CURRENCIES = {'JPY': {name: 'yen', symbol: '¥', costSuffix: '00'},
-                  'USD': {name: 'usd', symbol: '$', costSuffix: ' '}};
+var CURRENCIES = {'JP': {name: 'yen', symbol: '¥', costSuffix: '00'},
+                  'EN': {name: 'usd', symbol: '$', costSuffix: ' '}};
 
-var TOPPINGS_JS_TRANSLATIONS = {"mushroom": 'キノコ',
-                                "onion": 'タマネギ',
-                                "pepperoni": 'ペパロニ',
-                                "tomato": 'トマト',
-                                "sausage": 'ソーセージ',
-                                "cheese": 'チーズ',
-                                "broccoli": 'ブロッコリー',
-                                "chili-pepper": '唐辛子',
-                                "bell-pepper": 'ピーマン',
-                                "banana": 'バナナ'};
+var TRANSLATIONS = {"mushroom": {EN: 'mushroom', JP: 'キノコ'},
+                    "onion": {EN: 'onion', JP: 'タマネギ'},
+                    "pepperoni": {EN: 'pepperoni', JP: 'ペパロニ'},
+                    "tomato": {EN: 'tomato', JP: 'トマト'},
+                    "sausage": {EN: 'sausage', JP: 'ソーセージ'},
+                    "cheese": {EN: 'cheese', JP: 'チーズ'},
+                    "broccoli": {EN: 'broccoli', JP: 'ブロッコリー'},
+                    "chili-pepper": {EN: 'chili-pepper', JP: '唐辛子'},
+                    "bell-pepper": {EN: 'bell-pepper', JP: 'ピーマン'},
+                    "banana": {EN: 'banana', JP: 'バナナ'},
+                    "name": {EN: 'Milk Baby Pizza', JP: 'ミルクの赤ちゃんのピザ'},
+                    "greeting": {EN: 'Welcome', JP: 'ようこそ'},
+                    "instruction": {EN: 'Please Order Below', JP: '以下にご注文ください'},
+                    "size": {EN: 'Size', JP: 'サイズ'},
+                    "toppings": {EN: 'Toppings', JP: 'トッピング'},
+                    "count": {EN: 'Count', JP: 'カウント'},
+                    "error": {EN: 'Please Specify a Size', JP: 'サイズをご指定ください'},
+                    "order-header": {EN: 'Your Order', JP: 'ご注文'},
+                    "including": {EN: 'including', JP: '含めて'},
+                    "total": {EN: 'Total Cost', JP: '総費用'},
+                    "title": {EN: 'Milk Baby Pizza', JP: 'ミルクの赤ちゃんのピザ'}};
 
 var TOPPINGS = [new Topping("mushroom", 100),
                 new Topping("onion",    100),
@@ -60,7 +72,7 @@ Pizza.prototype.addTopping = function(topping) {
 // ********************************************
 
 function Pizzeria() {
-  this.currency = CURRENCIES['JPY'];
+  this.currency = CURRENCIES['JP'];
   this.sizes = ['7', '11', '15', '19', '23'];
   this.costs = this.calculateCosts(this.currency);
   this.pizzas = this.getPizzas();
@@ -89,8 +101,9 @@ Pizzeria.prototype.getPizzas = function() {
   return this.pizzas ? this.pizzas : pizzas;
 }
 
-Pizzeria.prototype.changeCurrency = function(currency) {
-  this.costs = this.calculateCosts(currency);
+Pizzeria.prototype.changeCurrency = function(language) {
+  this.currency = CURRENCIES[language];
+  this.costs = this.calculateCosts(this.currency);
 
   var self = this;
   this.pizzas.forEach(function(pizza) {
@@ -149,6 +162,16 @@ $(function() {
                                 '</div>');
   });
 
+  switchTo(language);
+  $('#language').click(function() {
+    $(this).text($(this).val());
+    language = ($(this).val() === 'EN') ? 'JP' : 'EN';
+    $(this).val(language);
+    pizzeria.changeCurrency(language);
+
+    switchTo(language);
+  });
+
   $('#pizza-form').submit(function(event) {
     event.preventDefault();
 
@@ -157,7 +180,7 @@ $(function() {
     var toppings = $('.selected-topping');
     var count = Number($('#pizza-count').val());
 
-    var resultHtml = '<h2>サイズをご指定ください!</h2>'; // Please specify a size!
+    // var resultHtml = '<h2><span class="translate" value="error"></span></h2>';
     if (pizza) {
       thumbsUp($('#submit-button'));
 
@@ -171,29 +194,35 @@ $(function() {
       var totalCost = pizzeria.currency.symbol + count*pizza.cost;
 
       // format result
-      resultHtml = ['<h2>ご注文: <br>',
-                    '<small>',
-                    '(', count, ') ',
-                    pizza.size + '" ',
-                    '<img class="topping-image" src="img/pizza.png">'];
+      // resultHtml = ['<h2><span class="translate" value="order-header"></span>: <br>',
+      //               '<small>',
+      //               '(', count, ') ',
+      //               pizza.size + '" ',
+      //               '<img class="topping-image" src="img/pizza.png">'];
+      $('#order-header').append('<small>(' + count + ') ' + pizza.size + '" ' +
+                                '<img class="topping-image" src="img/pizza.png">');
 
       if (pizza.toppings.length > 0) {
-        resultHtml.push('<br>', '含めて: ', '<br>'); // including
+        // resultHtml.push('<br><span class="translate" value="including"></span>: <br>');
         pizza.toppings.forEach(function(topping) {
-          resultHtml.push(TOPPINGS_JS_TRANSLATIONS[topping.name], ' ',
-                          '<img class="topping-image" src="img/' +
-                          topping.name + '.png">', '<br>');
+          $('#toppings-listing').append('<span class="translate" value="topping"></span>',' ',
+                                        '<img class="topping-image" src="img/' +
+                                        topping.name + '.png">', '<br>');
         });
       }
-      resultHtml.push('</small>', '</h2>');
-      resultHtml.push('<h2>総費用: <br>', totalCost, '</h2>');
+      // resultHtml.push('</small>', '</h2>');
+      // resultHtml.push('<h2><span class="translate" value="total"></span>: <br>', totalCost,
+      //                 '</h2>');
+      $('#total.cost').text(totalCost);
 
-      resultHtml.join('');
+      // resultHtml.join('');
     } else {
+      $('#error').fadeIn();
       thumbsDown($('#submit-button'));
     }
 
-    $('#result').html(resultHtml);
+    // switchTo(language);
+    // $('#result').html(resultHtml);
     $('#result').fadeIn();
     resetFields();
   });
@@ -215,6 +244,8 @@ $(function() {
   });
 
   function resetFields() {
+    $('#error').hide();
+    $('#result').hide();
     pizzeria = new Pizzeria();
   }
 });
@@ -222,6 +253,14 @@ $(function() {
 // ********************************************
 // DOM Helpers
 // ********************************************
+
+var switchTo = function(language) {
+  $('.translate').each(function() {
+    console.log($(this))
+    console.log($(this).attr('value'))
+    $(this).text(TRANSLATIONS[$(this).attr('value')][language]);
+  });
+}
 
 var getToppingName = function(element) {
   return element.find('img').attr('src').split('.')[0].split('/')[1];

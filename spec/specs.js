@@ -77,7 +77,7 @@ describe('Pizzeria', function() {
 
   it('returns currency-appropriate costs', function() {
     expect(testPizzeria.pizzas[0].cost).to.equal(700);
-    testPizzeria.changeCurrency(CURRENCIES['USD']);
+    testPizzeria.changeCurrency('EN');
     expect(testPizzeria.pizzas[0].cost).to.equal(7);
   });
 });
