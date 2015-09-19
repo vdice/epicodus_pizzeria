@@ -1,4 +1,4 @@
-#result {
+#result, #error, #toppings-listings {
   display: none;
 }
 
@@ -6,7 +6,11 @@
   cursor:pointer;
 }
 
-.selected, .selected-topping {
+.selected-size, .selected-choice {
+  font-weight: bold;
+}
+
+.selected {
   background-color: #C8E980;
 }
 

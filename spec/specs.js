@@ -14,7 +14,7 @@ describe('Topping', function() {
   });
 
   it('returns its altered price', function() {
-    testTopping.setPrice(200);
+    testTopping.price = 200;
     expect(testTopping.price).to.equal(200);
   });
 });
@@ -52,19 +52,15 @@ describe('Pizzeria', function() {
   var testPizzeria;
 
   beforeEach(function() {
-    testPizzeria = new Pizzeria();
+    testPizzeria = new Pizzeria('JP');
   });
 
   it('returns base pizzas', function() {
-    expect(testPizzeria.getPizzas().length).to.equal(5);
+    expect(testPizzeria.pizzas.length).to.equal(5);
   });
 
   it('returns available toppings', function() {
-    expect(testPizzeria.toppings.length).to.equal(10);
-  });
-
-  it('returns cost of a pizza', function() {
-    expect(testPizzeria.cost('7')).to.equal(700);
+    expect(testPizzeria.toppings.length).to.equal(12);
   });
 
   it('finds a pizza by size', function() {
@@ -72,12 +68,16 @@ describe('Pizzeria', function() {
   });
 
   it('finds a topping by name', function() {
-    expect(testPizzeria.find('pepperoni')).to.eql(new Topping('pepperoni', 125));
+    expect(testPizzeria.find('pepperoni')).to.eql(new Topping('pepperoni', 150));
+  });
+
+  it('returns cost of a pizza', function() {
+    expect(testPizzeria.find('7').cost).to.equal(700);
   });
 
   it('returns currency-appropriate costs', function() {
     expect(testPizzeria.pizzas[0].cost).to.equal(700);
-    testPizzeria.changeCurrency(CURRENCIES['USD']);
-    expect(testPizzeria.pizzas[0].cost).to.equal(7);
+    testPizzeria.changeCurrency('EN');
+    expect(testPizzeria.pizzas[0].cost).to.equal(fx(700).from('JPY').to('USD'));
   });
 });

@@ -1,12 +1,12 @@
-# _Pizzeria_
+# _Pizzeria Japonese_
 
-##### _Pizzeria, 9/18/2015_
+##### _Pizzeria Japonese, 9/18/2015_
 
 #### By _**Vaughn Dice**_
 
 ## Description
 
-_A website for a Japanese pizzeria where a customer can order pizza(s), selecting quantity, toppings and size, and then is given the final cost, in yen._
+_A website for a Japanese-area pizzeria where a customer can order pizza(s), selecting quantity, toppings and size.  They are then presented with the total cost.  Customers may toggle between Japanese and English languages and currencies._
 
 ## Setup
 
@@ -16,7 +16,7 @@ _A website for a Japanese pizzeria where a customer can order pizza(s), selectin
 
 ## Technologies Used
 
-_Written with JavaScript, mocha, chai, jQuery, Bootstrap._
+_Written with JavaScript, mocha, chai, jQuery, Bootstrap, money.js._
 
 ### Legal
 
