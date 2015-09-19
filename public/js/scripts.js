@@ -1,22 +1,16 @@
 // ********************************************
 // Global 'Constants'
 // ********************************************
-var language = 'JP';
+// fx exchange settings for use with http://openexchangerates.github.io/money.js/
+fx.rates = {
+	"USD" : 0.008338,
+	"JPY" : 1
+};
+fx.base = "JPY";
 
-var CURRENCIES = {'JP': {name: 'yen', symbol: '¥', costSuffix: '00'},
-                  'EN': {name: 'usd', symbol: '$', costSuffix: ' '}};
+var CURRENCIES = {EN: 'USD', JP: 'JPY'};
 
-var TRANSLATIONS = {"mushroom": {EN: 'mushroom', JP: 'キノコ'},
-                    "onion": {EN: 'onion', JP: 'タマネギ'},
-                    "pepperoni": {EN: 'pepperoni', JP: 'ペパロニ'},
-                    "tomato": {EN: 'tomato', JP: 'トマト'},
-                    "sausage": {EN: 'sausage', JP: 'ソーセージ'},
-                    "cheese": {EN: 'cheese', JP: 'チーズ'},
-                    "broccoli": {EN: 'broccoli', JP: 'ブロッコリー'},
-                    "chili-pepper": {EN: 'chili-pepper', JP: '唐辛子'},
-                    "bell-pepper": {EN: 'bell-pepper', JP: 'ピーマン'},
-                    "banana": {EN: 'banana', JP: 'バナナ'},
-                    "name": {EN: 'Milk Baby Pizza', JP: 'ミルクの赤ちゃんのピザ'},
+var TRANSLATIONS = {"name": {EN: 'Milk Baby Pizza', JP: 'ミルクの赤ちゃんのピザ'},
                     "greeting": {EN: 'Welcome', JP: 'ようこそ'},
                     "instruction": {EN: 'Please Order Below', JP: '以下にご注文ください'},
                     "size": {EN: 'Size', JP: 'サイズ'},
@@ -27,18 +21,11 @@ var TRANSLATIONS = {"mushroom": {EN: 'mushroom', JP: 'キノコ'},
                     "including": {EN: 'including', JP: '含めて'},
                     "total": {EN: 'Total Cost', JP: '総費用'},
                     "title": {EN: 'Milk Baby Pizza', JP: 'ミルクの赤ちゃんのピザ'},
-                    "symbol": {EN: CURRENCIES['EN'].symbol, JP: CURRENCIES['JP'].symbol}};
+                    "symbol": {EN: '$', JP: '¥'}};
 
-var toppings = [new Topping("mushroom", 1),
-                new Topping("onion",    1),
-                new Topping("pepperoni", 1.25),
-                new Topping("tomato", 1.5),
-                new Topping("sausage", 1),
-                new Topping("cheese", 1),
-                new Topping("broccoli", 1.5),
-                new Topping("chili-pepper", 1.75),
-                new Topping("bell-pepper", 1),
-                new Topping("banana", 2)];
+Number.prototype.toTwoDecimalPoints = function() {
+	return Math.floor(this * 100) / 100;
+}
 
 // ********************************************
 // Topping
@@ -46,10 +33,6 @@ var toppings = [new Topping("mushroom", 1),
 
 function Topping(name, price) {
   this.name = name;
-  this.price = price;
-}
-
-Topping.prototype.setPrice = function(price) {
   this.price = price;
 }
 
@@ -68,70 +51,48 @@ Pizza.prototype.addTopping = function(topping) {
   this.cost += topping.price;
 }
 
-Pizza.prototype.getCost = function() {
-  var cost = this.cost;
-  toppings.forEach(function(topping) {
-    cost += topping.price;
-  });
-  this.cost = cost;
-  return this.cost;
-}
-
 // ********************************************
 // Pizzeria
 // ********************************************
 
-function Pizzeria() {
-  this.currency = CURRENCIES['JP'];
-  this.sizes = ['7', '11', '15', '19', '23'];
-  this.costs = this.calculateCosts(this.currency);
-  this.pizzas = this.getPizzas();
-  this.toppings = toppings;
+function Pizzeria(language) {
+	this.language = language;
+  this.currency = CURRENCIES[this.language];
+
+  this.pizzas = [new Pizza('7', fx(700).from(fx.base).to(this.currency)),
+								 new Pizza('11', fx(1100).from(fx.base).to(this.currency)),
+							 	 new Pizza('15', fx(1500).from(fx.base).to(this.currency)),
+							 	 new Pizza('19', fx(1900).from(fx.base).to(this.currency)),
+							 	 new Pizza('23', fx(2300).from(fx.base).to(this.currency))];
+
+	this.toppings = [new Topping("mushroom", fx(100).from(fx.base).to(this.currency)),
+ 	                 new Topping("onion",    fx(100).from(fx.base).to(this.currency)),
+ 	                 new Topping("pepperoni", fx(150).from(fx.base).to(this.currency)),
+ 	                 new Topping("tomato", fx(100).from(fx.base).to(this.currency)),
+ 	                 new Topping("sausage", fx(150).from(fx.base).to(this.currency)),
+ 	                 new Topping("cheese", fx(125).from(fx.base).to(this.currency)),
+ 	                 new Topping("broccoli", fx(125).from(fx.base).to(this.currency)),
+ 	                 new Topping("chili-pepper", fx(175).from(fx.base).to(this.currency)),
+ 	                 new Topping("bell-pepper", fx(100).from(fx.base).to(this.currency)),
+ 	                 new Topping("banana", fx(200).from(fx.base).to(this.currency))];
 }
 
-Pizzeria.prototype.calculateCosts = function(currency) {
-  var costs = {};
+Pizzeria.prototype.adjustCosts = function(currency) {
+	var self = this;
+	this.toppings.forEach(function(topping) {
+		topping.price = fx(topping.price).from(self.currency).to(currency);
+	});
 
-  var self = this;
-  this.sizes.forEach(function(size) {
-    costs[size] = Number(size + currency.costSuffix);
-  });
-
-  return costs;
-}
-
-Pizzeria.prototype.getPizzas = function() {
-  var pizzas = [];
-
-  var self = this;
-  this.sizes.forEach(function(size) {
-    pizzas.push(new Pizza(size, self.costs[size]));
-  });
-
-  return this.pizzas ? this.pizzas : pizzas;
+	this.pizzas.forEach(function(pizza) {
+		pizza.cost = fx(pizza.cost).from(self.currency).to(currency);
+	});
 }
 
 Pizzeria.prototype.changeCurrency = function(language) {
-  this.currency = CURRENCIES[language];
-  this.costs = this.calculateCosts(this.currency);
-
-  var self = this;
-  this.toppings.forEach(function(topping) {
-    console.log(topping)
-    console.log(topping.price)
-    if (language === 'EN') {
-      topping.price = Number(String(topping.price).slice(0, topping.price.length-2));
-    } else {
-      topping.price = Number(String(topping.price).split('.').join('') + CURRENCIES[language].costSuffix);
-    }
-  });
-  this.pizzas.forEach(function(pizza) {
-    pizza.cost = pizza.getCost();
-  });
-}
-
-Pizzeria.prototype.cost = function(size) {
-  return this.costs[size];
+  var newCurrency = CURRENCIES[language];
+	console.log(newCurrency)
+  this.adjustCosts(newCurrency);
+  this.currency = newCurrency;
 }
 
 Pizzeria.prototype.find = function(query) {
@@ -159,7 +120,9 @@ Pizzeria.prototype.find = function(query) {
 // ********************************************
 
 $(function() {
-  var pizzeria = new Pizzeria();
+	var language = $("#language").val();
+  var pizzeria = new Pizzeria(language);
+	var size, count, pizza, toppings;
   $('#submit-button').html('<i class="fa fa-hand-o-right"></i>');
 
   // build sizes
@@ -181,24 +144,34 @@ $(function() {
                                 '</div>');
   });
 
-  switchTo(language);
-  $('#language').click(function() {
-    $(this).text($(this).val());
-    language = ($(this).val() === 'EN') ? 'JP' : 'EN';
-    $(this).val(language);
-    pizzeria.changeCurrency(language);
+	var switchTo = function(language) {
+		// translate all relevant elements using chosen language
+		$('.translate').each(function() {
+			$(this).text(TRANSLATIONS[$(this).attr('value')][language]);
+		});
+		// update new total in chosen currency
+		$('#total-cost').text(getCost(count, pizza))
+	}
 
+	switchTo(language);
+  $('#language').click(function() {
+		language = ($(this).val() === 'EN') ? 'JP' : 'EN';
+    $(this).text($(this).val()); // toggle button text
+    $(this).val(language); // set current language mode via value
+    pizzeria.changeCurrency(language);
     switchTo(language);
+		console.log('switching to ' + language)
   });
 
   $('#pizza-form').submit(function(event) {
     event.preventDefault();
     resetFields();
 
-    var size = $('#pizza-size').val().split('"')[0];
-    var pizza = pizzeria.find(size);
-    var toppings = $('.selected-topping');
-    var count = Number($('#pizza-count').val());
+    pizzeria = new Pizzeria(language);
+    size = $('#pizza-size').val().split('"')[0];
+    pizza = pizzeria.find(size);
+    toppings = $('.selected-topping');
+    count = Number($('#pizza-count').val());
 
     if (pizza) {
       thumbsUp($('#submit-button'));
@@ -210,7 +183,7 @@ $(function() {
       });
 
       // calculate cost
-      var totalCost = count*pizza.getCost();
+      var totalCost = getCost(count, pizza);
 
       $('#order-details').html('<small>(' + count + ') ' + pizza.size + '" ' +
                               '<img class="topping-image" src="img/pizza.png">');
@@ -218,10 +191,10 @@ $(function() {
       if (pizza.toppings.length > 0) {
         $('#toppings-listing').html('');
         pizza.toppings.forEach(function(topping) {
-          // '<span class="translate" value="topping"></span>',' ',
           $('#toppings-listing').append('<img class="topping-image" src="img/' +
-                                        topping.name + '.png">', '<br>');
+                                        topping.name + '.png">');
         });
+				$('#toppings-listings').show();
       }
       $('#total-cost').text(totalCost);
 
@@ -234,7 +207,7 @@ $(function() {
 
   $('.pizza-size').click(function() {
     pointRight($('#submit-button'));
-    $('.selected').toggleClass('selected');
+    $('.selected').toggleClass('selected'); // un-select any other selected
     $('#pizza-size').val($(this).text());
     $(this).toggleClass('selected');
   });
@@ -251,7 +224,6 @@ $(function() {
   function resetFields() {
     $('#error').hide();
     $('#result').hide();
-    pizzeria = new Pizzeria();
   }
 });
 
@@ -259,19 +231,8 @@ $(function() {
 // DOM Helpers
 // ********************************************
 
-var switchTo = function(language) {
-  $('.translate').each(function() {
-    $(this).text(TRANSLATIONS[$(this).attr('value')][language]);
-  });
-
-  var previousTotal = $('#total-cost').text();
-  if (language === 'EN') {
-    $('#total-cost').text([previousTotal.slice(0, previousTotal.length-2),
-                          '.',
-                          previousTotal.slice(previousTotal.length-2, -1)].join(''));
-  } else {
-    $('#total-cost').text(previousTotal.split('.').join(''));
-  }
+var getCost = function(count, pizza) {
+	return !count || !pizza ? 0 : (count*pizza.cost).toTwoDecimalPoints();
 }
 
 var getToppingName = function(element) {
