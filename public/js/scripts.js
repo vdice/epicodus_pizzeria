@@ -26,18 +26,19 @@ var TRANSLATIONS = {"mushroom": {EN: 'mushroom', JP: 'キノコ'},
                     "order-header": {EN: 'Your Order', JP: 'ご注文'},
                     "including": {EN: 'including', JP: '含めて'},
                     "total": {EN: 'Total Cost', JP: '総費用'},
-                    "title": {EN: 'Milk Baby Pizza', JP: 'ミルクの赤ちゃんのピザ'}};
+                    "title": {EN: 'Milk Baby Pizza', JP: 'ミルクの赤ちゃんのピザ'},
+                    "symbol": {EN: CURRENCIES['EN'].symbol, JP: CURRENCIES['JP'].symbol}};
 
-var TOPPINGS = [new Topping("mushroom", 100),
-                new Topping("onion",    100),
-                new Topping("pepperoni", 125),
-                new Topping("tomato", 100),
-                new Topping("sausage", 125),
-                new Topping("cheese", 100),
-                new Topping("broccoli", 150),
-                new Topping("chili-pepper", 150),
-                new Topping("bell-pepper", 100),
-                new Topping("banana", 200)];
+var toppings = [new Topping("mushroom", 1),
+                new Topping("onion",    1),
+                new Topping("pepperoni", 1.25),
+                new Topping("tomato", 1.5),
+                new Topping("sausage", 1),
+                new Topping("cheese", 1),
+                new Topping("broccoli", 1.5),
+                new Topping("chili-pepper", 1.75),
+                new Topping("bell-pepper", 1),
+                new Topping("banana", 2)];
 
 // ********************************************
 // Topping
@@ -67,6 +68,15 @@ Pizza.prototype.addTopping = function(topping) {
   this.cost += topping.price;
 }
 
+Pizza.prototype.getCost = function() {
+  var cost = this.cost;
+  toppings.forEach(function(topping) {
+    cost += topping.price;
+  });
+  this.cost = cost;
+  return this.cost;
+}
+
 // ********************************************
 // Pizzeria
 // ********************************************
@@ -76,7 +86,7 @@ function Pizzeria() {
   this.sizes = ['7', '11', '15', '19', '23'];
   this.costs = this.calculateCosts(this.currency);
   this.pizzas = this.getPizzas();
-  this.toppings = TOPPINGS;
+  this.toppings = toppings;
 }
 
 Pizzeria.prototype.calculateCosts = function(currency) {
@@ -106,8 +116,17 @@ Pizzeria.prototype.changeCurrency = function(language) {
   this.costs = this.calculateCosts(this.currency);
 
   var self = this;
+  this.toppings.forEach(function(topping) {
+    console.log(topping)
+    console.log(topping.price)
+    if (language === 'EN') {
+      topping.price = Number(String(topping.price).slice(0, topping.price.length-2));
+    } else {
+      topping.price = Number(String(topping.price).split('.').join('') + CURRENCIES[language].costSuffix);
+    }
+  });
   this.pizzas.forEach(function(pizza) {
-    pizza.cost = self.costs[pizza.size];
+    pizza.cost = pizza.getCost();
   });
 }
 
@@ -174,13 +193,13 @@ $(function() {
 
   $('#pizza-form').submit(function(event) {
     event.preventDefault();
+    resetFields();
 
     var size = $('#pizza-size').val().split('"')[0];
     var pizza = pizzeria.find(size);
     var toppings = $('.selected-topping');
     var count = Number($('#pizza-count').val());
 
-    // var resultHtml = '<h2><span class="translate" value="error"></span></h2>';
     if (pizza) {
       thumbsUp($('#submit-button'));
 
@@ -191,40 +210,26 @@ $(function() {
       });
 
       // calculate cost
-      var totalCost = pizzeria.currency.symbol + count*pizza.cost;
+      var totalCost = count*pizza.getCost();
 
-      // format result
-      // resultHtml = ['<h2><span class="translate" value="order-header"></span>: <br>',
-      //               '<small>',
-      //               '(', count, ') ',
-      //               pizza.size + '" ',
-      //               '<img class="topping-image" src="img/pizza.png">'];
-      $('#order-header').append('<small>(' + count + ') ' + pizza.size + '" ' +
-                                '<img class="topping-image" src="img/pizza.png">');
+      $('#order-details').html('<small>(' + count + ') ' + pizza.size + '" ' +
+                              '<img class="topping-image" src="img/pizza.png">');
 
       if (pizza.toppings.length > 0) {
-        // resultHtml.push('<br><span class="translate" value="including"></span>: <br>');
+        $('#toppings-listing').html('');
         pizza.toppings.forEach(function(topping) {
-          $('#toppings-listing').append('<span class="translate" value="topping"></span>',' ',
-                                        '<img class="topping-image" src="img/' +
+          // '<span class="translate" value="topping"></span>',' ',
+          $('#toppings-listing').append('<img class="topping-image" src="img/' +
                                         topping.name + '.png">', '<br>');
         });
       }
-      // resultHtml.push('</small>', '</h2>');
-      // resultHtml.push('<h2><span class="translate" value="total"></span>: <br>', totalCost,
-      //                 '</h2>');
-      $('#total.cost').text(totalCost);
+      $('#total-cost').text(totalCost);
 
-      // resultHtml.join('');
+      $('#result').fadeIn();
     } else {
       $('#error').fadeIn();
       thumbsDown($('#submit-button'));
     }
-
-    // switchTo(language);
-    // $('#result').html(resultHtml);
-    $('#result').fadeIn();
-    resetFields();
   });
 
   $('.pizza-size').click(function() {
@@ -256,10 +261,17 @@ $(function() {
 
 var switchTo = function(language) {
   $('.translate').each(function() {
-    console.log($(this))
-    console.log($(this).attr('value'))
     $(this).text(TRANSLATIONS[$(this).attr('value')][language]);
   });
+
+  var previousTotal = $('#total-cost').text();
+  if (language === 'EN') {
+    $('#total-cost').text([previousTotal.slice(0, previousTotal.length-2),
+                          '.',
+                          previousTotal.slice(previousTotal.length-2, -1)].join(''));
+  } else {
+    $('#total-cost').text(previousTotal.split('.').join(''));
+  }
 }
 
 var getToppingName = function(element) {
