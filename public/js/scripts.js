@@ -232,7 +232,7 @@ $(function() {
 
   $('.topping').click(function() {
     $(this).find('small').toggleClass('selected-choice');
-		$(this).toggleClass('selected-topping selected')
+		$(this).toggleClass('selected-topping')
   });
 
   function resetFields() {

@@ -6,6 +6,8 @@
 
 ## Description
 
+_**This app is live!** It has been deployed via Heroku and can be seen  [**here**](https://pizzeria-japonese.herokuapp.com)._
+
 _A website for a Japanese-area pizzeria where a customer can order pizza(s), selecting quantity, toppings and size.  They are then presented with the total cost.  Customers may toggle between Japanese and English languages and currencies._
 
 ## Setup

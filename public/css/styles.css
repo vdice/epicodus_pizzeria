@@ -10,7 +10,7 @@
   font-weight: bold;
 }
 
-.selected {
+.selected, .selected-topping {
   background-color: #C8E980;
 }
 
