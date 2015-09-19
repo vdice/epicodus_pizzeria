@@ -22,12 +22,13 @@
               <span class="translate" value="greeting" id="greeting"></span>!
               <span class="translate" value="instruction" id="instruction"></span>.
             </small>
-          </h2>
-          <button id="language" value="JP" class="btn btn-primary">EN</button>
+          </h2><br>
+          <button id="language" value="JP" class="btn btn-info point-right">English</button>
         </center>
       </div>
       <div class="row">
         <div class="col-xs-8">
+          <!-- Pizza Form -->
           <form id="pizza-form">
             <!-- Size -->
             <div class="form-group">
@@ -49,22 +50,23 @@
               <label for="pizza-count">
                 <span class="translate" id="pizza-count-label" value="count"></span>:
               </label>
-              <input class="form-control" type="number" id="pizza-count" name="pizza-count" value="1" min="1">
+              <input class="form-control point-right" type="number" id="pizza-count" name="pizza-count" value="1" min="1">
             </div>
             <button type="submit" class="btn btn-success" id="submit-button"></button>
           </form>
         </div>
         <div class="col-xs-4">
-          <div id="error">
+          <!-- Error, or -->
+          <div id="error" class="hideable">
             <h2><span class="translate" value="error"></span>!</h2>
           </div>
-
-          <div id="result">
+          <!-- Result -->
+          <div id="result" class="hideable">
             <h2 id="order-header">
               <span class="translate" value="order-header"></span>: <br>
               <span id="order-details"></span>
             </h2>
-            <div id="toppings-listings">
+            <div id="toppings-listings" class="hideable">
               <h2><span class="translate" value="including"></span>: </h2>
               <span id="toppings-listing"></span>
             </div>

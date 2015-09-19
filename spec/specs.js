@@ -60,7 +60,7 @@ describe('Pizzeria', function() {
   });
 
   it('returns available toppings', function() {
-    expect(testPizzeria.toppings.length).to.equal(10);
+    expect(testPizzeria.toppings.length).to.equal(12);
   });
 
   it('finds a pizza by size', function() {
