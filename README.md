@@ -4,6 +4,8 @@
 
 #### By _**Vaughn Dice**_
 
+![Preview](/public/img/preview.png?raw=true "Preview")
+
 ## Description
 
 _**This app is live!** It has been deployed via Heroku and can be seen  [**here**](https://pizzeria-japonese.herokuapp.com)._
