@@ -1,10 +1,8 @@
 # _Pizzeria Japonese_
 
-##### _Pizzeria Japonese, 9/18/2015_
+![Preview](/public/img/preview.png?raw=true "Preview")
 
 #### By _**Vaughn Dice**_
-
-![Preview](/public/img/preview.png?raw=true "Preview")
 
 ## Description
 
